@@ -2,10 +2,10 @@
   "name": "server",
   "version": "1.0.0",
   "description": "InstaClone",
-  "main": "../server/src/express.js",
+  "main": "express.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon ../server/src/express.js "
+    "dev": "nodemon express.js "
   },
   "author": "Hemanth",
   "license": "ISC",
