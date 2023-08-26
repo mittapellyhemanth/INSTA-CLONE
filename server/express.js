@@ -17,9 +17,9 @@ mongoose
   .catch((err) => {
     console.log("error :", err);
   });
-// app.use('/',(req,res)=>{
-//   res.send('hiiiiii')
-// })
+app.use('/',(req,res)=>{
+  res.send('hiiiiii')
+})
 app.use("/", routers);
 app.use("/uploads", express.static("uploads"));
 app.listen(port, console.log("server connected"));
