@@ -1,0 +1,50 @@
+.landing-card{
+    width: auto;
+    height:auto;
+    margin: auto;
+}
+.landing-container{
+    width: auto;
+    height:100vh;
+  display: flex;
+  flex-direction: row;
+  flex-wrap:wrap;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+  
+}
+.img-container{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.landing-container >div>img{
+    width: auto;
+    height: 500px;
+    display: flex;
+    flex-wrap: wrap;
+}
+.text-container{
+    width: fit-content;
+    height: auto;
+    text-align: center;
+    display: block;
+    flex-wrap: wrap;
+    padding: 20px;
+}
+.text-style{
+    color: #006238;
+    font-size: 1.5rem;
+}
+
+.btn-style{
+    color: #006238;
+    border: 1px solid #006238;
+    padding:3px 15px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1rem;
+}
