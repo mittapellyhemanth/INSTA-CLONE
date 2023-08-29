@@ -9,8 +9,9 @@ import "./PostView.css";
 export default function PostView() {
   const [getData, setGetData] = useState({ result: [] });
   useEffect(() => {
+    console.log(`${process.env.REACT_PROXY_URL}/getPost`);
     axios
-      .get("/getPost")
+      .get(`${process.env.REACT_APP_PROXY_URL}/getPost`)
       .then((res) => {
         setGetData(res.data);
        

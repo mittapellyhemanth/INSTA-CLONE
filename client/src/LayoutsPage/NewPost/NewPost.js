@@ -36,7 +36,7 @@ const {name,location,description,PostImage} = formData ;
           formDataToSend.append('description', description);
           formDataToSend.append('PostImage', PostImage);
     
-           const res = await axios.post("/post", formDataToSend);
+           const res = await axios.post(`${process.env.REACT_APP_PROXY_URL}/post`, formDataToSend);
            if(res.status === 201){
 
              navigate('/post/view');
