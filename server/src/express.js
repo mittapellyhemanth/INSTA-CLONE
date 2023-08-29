@@ -1,7 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-const routers = require("./Routers/Post");
+const routers = require("../Routers/Post");
 const app = express();
 const cors = require("cors");
 app.use(cors());
@@ -17,9 +17,6 @@ mongoose
   .catch((err) => {
     console.log("error :", err);
   });
-// app.use('/',(req,res)=>{
-//   res.send('hiiiiii')
-// })
 app.use("/", routers);
 app.use("/uploads", express.static("uploads"));
 app.listen(port, console.log("server connected"));
