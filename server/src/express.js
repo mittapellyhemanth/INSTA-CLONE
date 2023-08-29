@@ -8,7 +8,7 @@ app.use(cors());
 require("dotenv").config();
 
 app.use(bodyParser.json());
-const port = process.env.PORT || 5000
+const port = process.env.PORT;
 mongoose
   .connect(process.env.URL)
   .then((res) => {
@@ -20,4 +20,4 @@ mongoose
 
 app.use("/", routers);
 app.use("/uploads", express.static("uploads"));
-app.listen(port, console.log("server connected"));
+app.listen(port , console.log("server connected"));
