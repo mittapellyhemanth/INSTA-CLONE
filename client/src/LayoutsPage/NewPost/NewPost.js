@@ -20,7 +20,7 @@ const [formData,setFormData] = useState({
 const {name,location,description,PostImage} = formData ;
    const handle = (e)=>{
     if (e.target.name === 'PostImage') {
-      console.log('got');
+     
       setFormData({ ...formData, [e.target.name]: e.target.files[0] });
     } else {
       setFormData({ ...formData, [e.target.name]: e.target.value });
