@@ -12,7 +12,7 @@ export default function PostView() {
     axios
       .get(`${process.env.REACT_APP_PROXY_URL}/getPost`)
       .then((res) => {
-        console.log(res);
+        // console.log(res);
         setGetData(res.data);
        
       })
