@@ -19,31 +19,38 @@ const [formData,setFormData] = useState({
 
 const {name,location,description,PostImage} = formData ;
    const handle = (e)=>{
-    if (e.target.name === 'PostImage') {
-     
-      setFormData({ ...formData, [e.target.name]: e.target.files[0] });
+    const { name, value, files } = e.target;
+    if (name === 'PostImage') {
+      setFormData({ ...formData, [name]: files[0] });
     } else {
-      setFormData({ ...formData, [e.target.name]: e.target.value });
+      setFormData({ ...formData, [name]: value });
     }
   }
   const navigate = useNavigate()
     async function submit(e){
         e.preventDefault();
+
+
         try {
           const formDataToSend = new FormData();
           formDataToSend.append('name', name);
           formDataToSend.append('location', location);
           formDataToSend.append('description', description);
           formDataToSend.append('PostImage', PostImage);
-    
-           const res = await axios.post(`${process.env.REACT_APP_PROXY_URL}/post`, formDataToSend);
-           if(res.status === 201){
+          //  const res = await axios.post(`${process.env.REACT_APP_PROXY_URL}/post`, formDataToSend);
+          // console.log(process.env.REACT_APP_PROXY_URL);
+          const res = await axios.post(`${process.env.REACT_APP_PROXY_URL}/posts`, formDataToSend);
+          
+          console.log(formData)
+          if(res.status === 201){
 
              navigate('/post/view');
            }
         } catch (err) {
+          console.log(formData)
           console.log(err);
         }
+        
         
 }
     return <>
@@ -51,9 +58,10 @@ const {name,location,description,PostImage} = formData ;
     <NavBar/>
   </div>
    <div className="form-container">
-    <form encType="multipart/form-data" method="POST" action="/"  onSubmit={submit}>
+   {/*  encType="multipart/form-data" */}
+    <form  method="POST" action="/posts" encType="multipart/form-data" onSubmit={submit}>  
       <div className="file-input border"> 
-      <input type="file" placeholder="No file chosen"  name='PostImage'  onChange={handle} required/> 
+      <input type="file" placeholder="No file chosen"  name='PostImage'   onChange={handle} required/> 
       </div>
       <div className="name-location">
        <div>
