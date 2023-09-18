@@ -1,37 +1,53 @@
 const PostModel = require('../Models/post');
+
 let exportRoutes = {};
 
 exportRoutes.post =  async function(req,res){
   try {
-    let post = new PostModel({
+    const post = new PostModel({
       ...req.body,
-       PostImage: req.file.filename
+      date: new Date().toLocaleDateString("en-US", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }),
+      PostImage: req.file.filename,
     });
 
     await post.save();
 
     res.status(201).json({
-      message: 'Data posted successfully',
+      message: "Data posted successfully",
     });
   } catch (err) {
-    console.error('Error:', err);
+    console.error("Error:", err);
     res.status(500).json({
-      error: 'An error occurred',
+      error: "An error occurred",
       mess: err.message,
     });
   }
-
 }
 
 exportRoutes.get = async function(req,res){
-    try{
-        let posts = await PostModel.find();
-        res.status(200).json({status:"Success", result : posts});
-    }
-    catch(err)
-    {
-        res.status(400).json({status:"failed", message : err.message});
-    }
+  try {
+    const posts = await PostModel.find().sort({ createdAt: -1 }); // Sort posts by createdAt in descending order
+    const postsWithFormattedDate = posts.map((post) => ({
+      ...post.toObject(),
+      formattedCreatedAt: new Date(post.createdAt).toString(),
+    }));
+
+    res.status(200).json({
+      message: "Posts fetched successfully",
+      result: postsWithFormattedDate,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: "Error fetching posts",
+      error: error,
+    });
+  }
 }
+
+
 
 module.exports = exportRoutes;
