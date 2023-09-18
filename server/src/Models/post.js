@@ -32,7 +32,7 @@ const createPost =  mongoose.Schema({
 }
 );
 
-const PostModel = mongoose.model("instaPost", createPost);
+const PostModel = mongoose.model("uploads", createPost);
 
 module.exports = PostModel;
 // likes: {

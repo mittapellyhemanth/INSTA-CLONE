@@ -1,85 +1,81 @@
 const express = require('express');
-require('dotenv').config()
-const app = express();
-const bodyParser = require('body-parser')
-// const path = require('path');
-const crypto = require('crypto');
+const mongoose = require('mongoose');
+const { GridFsStorage } = require('multer-gridfs-storage');
 const multer = require('multer');
-const {GridFsStorage} = require('multer-gridfs-storage')
-const Grid = require('gridfs-stream')
-const methodOverride = require('method-override')
+const Grid = require('gridfs-stream');
+const methodOverride = require('method-override');
+const bodyParser = require('body-parser');
+const cors = require('cors');
+require('dotenv').config();
 const PostModel = require('../Models/post')
-app.use(bodyParser.json())
-const cors = require("cors");
+const app = express();
+const crypto = require('crypto');
+const path = require('path');
 app.use(cors());
-app.use(methodOverride('_method'))
-// app.set('view engine', 'ejs');
-const mongoose = require('mongoose')
-const router = require('../routers/PostRouter')
+app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(methodOverride('_method'));
+app.set('view engine', 'ejs');
 
-app.use(express.urlencoded({extended: true}));
-const URL = process.env.DB_URL
 
-mongoose.connect(URL, { useNewUrlParser: true, useUnifiedTopology: true });
+const URL = process.env.DB_URL;
+
+mongoose.connect(URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
+
 const db = mongoose.connection;
 
-// Handle MongoDB connection errors
 db.on('error', (err) => {
   console.error('MongoDB connection error:', err);
 });
-// const connect = mongoose.createConnection(URL)
-// mongoose.connect(URL).then((res)=>
-// console.log('DB connected Sucessfully'))
-// .catch(err=>console.log(err))
 
-// Init gfs
 
-let gfs
 
-db.once('open',  () => {
-  console.log("db connected")
-  gfs = Grid(db, mongoose.mongo);
-gfs.collection('uploads')
-  // all set!
+let gfs, gridfsBucket;
+  db.once('open', () => {
+    console.log("db connected")
+   gridfsBucket = new mongoose.mongo.GridFSBucket(db, {
+   bucketName: process.env.BUCKET_NAME
+ });
+
+   gfs = Grid(db, mongoose.mongo);
+   gfs.collection(process.env.BUCKET_NAME);
 })
 
-// create storage engine 
-
 const storage = new GridFsStorage({
-    url: URL,
-    file: (req, file) => {
-      return new Promise((resolve, reject) => {
-          const filename = file.originalname;
-          const fileInfo = {
-            filename: filename,
-            bucketName: 'uploads'
-          };
-          resolve(fileInfo);
+  url: URL,
+  file: (req, file) => {
+    return new Promise((resolve, reject) => {
+      crypto.randomBytes(16, (err, buf) => {
+        if (err) {
+          return reject(err);
+        }
+        const filename = buf.toString('hex') + path.extname(file.originalname);
+        const fileInfo = {
+          filename: filename,
+          bucketName: process.env.BUCKET_NAME
+        };
+        resolve(fileInfo);
       });
-    }
-  });
+    });
+  }
+});
 
-  const upload = multer({ storage });
-// router get /
-//load form
-
-// app.get('/',(req,res)=>{
-//     res.status(201).json({message:'hiii'})
-// })
-
-// router post  /upload
-//upload fileto db
- 
-// app.use('/',upload.single('PostImage'),router);
-
+const upload = multer({ storage });
 
 app.post('/posts', upload.single('PostImage'), async (req, res) => {
-  console.log(req.file.filename)
-  console.log(req.file)
   try {
+   
     const post = new PostModel({
       ...req.body,
-       PostImage: req.file.filename
+      date:new Date().toLocaleDateString('en-US', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+    }),
+      PostImage: req.file.filename,
     });
 
     await post.save();
@@ -96,20 +92,49 @@ app.post('/posts', upload.single('PostImage'), async (req, res) => {
   }
 });
 
+app.get('/getPosts', async (req, res) => {
+  try {
+    const posts = await PostModel.find().sort({ createdAt: -1 }); // Sort posts by createdAt in descending order
+    const postsWithFormattedDate = posts.map(post => ({
+        ...post.toObject(),
+        formattedCreatedAt: new Date(post.createdAt).toString()
+    }));
+
+    res.status(200).json({
+        message: 'Posts fetched successfully',
+        result: postsWithFormattedDate
+    });
+} catch (error) {
+    res.status(500).json({
+        message: 'Error fetching posts',
+        error: error
+    });
+}
+});
+
+app.get('/images/:filename', (req, res) => {
+ 
+const filename = req.params.filename.toString();
+  gfs.files.findOne({ filename: filename }, (err, file) => {
+   
+    if (!file || file.length === 0) {
+      return res.status(404).json({
+        error :err + 'No files exist',
+      });
+    }
+  //  return res.json(file)
+  if(file.contentType === 'image/jpeg' || file.contentType ==='image/png') 
+  {
+     const readStream = gridfsBucket.openDownloadStream(file._id);
+     readStream.pipe(res);
+  }
+    else {
+      return res.status(404).json({
+        err: 'No image exists',
+      });
+    }
+  });
+});
 
 
-// app.get('/files',(req,res)=>{
-//     gfs.files.find().toArray((err,files)=>{
-//         //check if files
-//         if(!files || files.length === 0){
-//             return res.status(404).json({
-//                 err:'no files exists'
-//             });
-//         }
-//         return res.json(files);
-//     });
-// });
-
-
-
-app.listen(process.env.PORT,console.log('port connnected'))
+app.listen(process.env.PORT, () => console.log('Server connected on port', process.env.PORT));

@@ -38,7 +38,7 @@ const {name,location,description,PostImage} = formData ;
           formDataToSend.append('description', description);
           formDataToSend.append('PostImage', PostImage);
           //  const res = await axios.post(`${process.env.REACT_APP_PROXY_URL}/post`, formDataToSend);
-          // console.log(process.env.REACT_APP_PROXY_URL);
+          console.log(process.env.REACT_APP_PROXY_URL);
           const res = await axios.post(`${process.env.REACT_APP_PROXY_URL}/posts`, formDataToSend);
           
           console.log(formData)
@@ -59,7 +59,7 @@ const {name,location,description,PostImage} = formData ;
   </div>
    <div className="form-container">
    {/*  encType="multipart/form-data" */}
-    <form  method="POST" action="/posts" encType="multipart/form-data" onSubmit={submit}>  
+    <form  method="POST" action="/uploads" encType="multipart/form-data" onSubmit={submit}>  
       <div className="file-input border"> 
       <input type="file" placeholder="No file chosen"  name='PostImage'   onChange={handle} required/> 
       </div>

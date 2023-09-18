@@ -11,8 +11,9 @@ export default function PostView() {
   useEffect(() => {
     axios
       // .get(`${process.env.REACT_APP_PROXY_URL}/getPost`)
-      .get(`${process.env.REACT_APP_PROXY_URL}/getPost`)
+      .get(`${process.env.REACT_APP_PROXY_URL}/getPosts`)
       .then((res) => {
+        // console.log(process.env.REACT_APP_PROXY_URL)
         // console.log(res);
         setGetData(res.data);
        
@@ -42,7 +43,7 @@ export default function PostView() {
                 </div>
               </div>
               <div className="img">
-                 <img src={`${post.PostImage}`} alt="user-img" />
+                 <img src={`${process.env.REACT_APP_PROXY_URL}/images/${post.PostImage}`} alt="user-img" />
               </div>
 
               <div className="footer mg-l">
@@ -64,3 +65,4 @@ export default function PostView() {
     </>
   );
 }
+
